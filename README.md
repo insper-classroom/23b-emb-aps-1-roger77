@@ -18,7 +18,7 @@ TODO: Aualizar pinos
 |---------|-----------------|
 | BUZZER  |      PD27       |
 | START   |    PC31         |
-| SELEÇÃO |                 |
+| SELEÇÃO |       PD28      |
 
 ### Imagem da montagem
 
