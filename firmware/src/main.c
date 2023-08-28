@@ -14,6 +14,11 @@
 #define BUT2_PIO_IDX		    31
 #define BUT2_PIO_IDX_MASK		(1u << BUT2_PIO_IDX)
 
+#define BUT1_PIO PIOD
+#define BUT1_PIO_ID ID_PIOD
+#define BUT1_PIO_IDX 28
+#define BUT1_PIO_IDX_MASK (1u << BUT1_PIO_IDX)
+
 // Funções
 void set_buzzer(){
 	pio_set(BUZZER_PIO_ID, BUZZER_PIO_IDX_MASK);
@@ -30,28 +35,41 @@ int get_startstop(){
 	return 1;
 }
 
+int get_selecao(){
+	if(pio_get(BUT1_PIO_ID, PIO_INPUT, BUT1_PIO_IDX_MASK )){
+		return 0;
+	}
+	return 1;
+}
+
 // Função init()
 void init(void) {
-	  // Initialize the board clock
-	  sysclk_init();
+	// Initialize the board clock
+	sysclk_init();
 
-	  // Desativa WatchDog Timer
-	  WDT->WDT_MR = WDT_MR_WDDIS;
-	  
-	  //Inicializando saída (buzzer)
-	  pmc_enable_periph_clk(BUZZER_PIO_ID);
-	  
-	  pio_set_output(BUZZER_PIO, BUZZER_PIO_IDX_MASK, 0, 0, 0);
-	  
-	  pio_pull_up(BUZZER_PIO, BUZZER_PIO_IDX_MASK, 1);
-	  
-	  // Inicializando entrada (botão 2)
-	  pmc_enable_periph_clk(BUT2_PIO_ID);
-	  
-	  pio_set_input(BUT2_PIO, BUT2_PIO_IDX_MASK, PIO_DEFAULT);
+	// Desativa WatchDog Timer
+	WDT->WDT_MR = WDT_MR_WDDIS;
+	
+	//Inicializando saída (buzzer)
+	pmc_enable_periph_clk(BUZZER_PIO_ID);
+	
+	pio_set_output(BUZZER_PIO, BUZZER_PIO_IDX_MASK, 0, 0, 0);
+	
+	pio_pull_up(BUZZER_PIO, BUZZER_PIO_IDX_MASK, 1);
+	
+	// Inicializando Start/Stop (botão 2)
+	pmc_enable_periph_clk(BUT2_PIO_ID);
+	
+	pio_set_input(BUT2_PIO, BUT2_PIO_IDX_MASK, PIO_DEFAULT);
 
-	  pio_pull_up(BUT2_PIO, BUT2_PIO_IDX_MASK, 1);
-	  
+	pio_pull_up(BUT2_PIO, BUT2_PIO_IDX_MASK, 1);
+	
+	// Inicializando Seleção (botão 1)
+	pmc_enable_periph_clk(BUT1_PIO_ID);
+	
+	pio_set_input(BUT1_PIO, BUT1_PIO_IDX_MASK, PIO_DEFAULT);
+	
+	pio_pull_up(BUT1_PIO, BUT1_PIO_IDX_MASK, 1);
 }
 
 int main (void)
@@ -60,14 +78,14 @@ int main (void)
 	sysclk_init();
 	delay_init();
 
-  // Init OLED
+	// Init OLED
 	gfx_mono_ssd1306_init();
-  
-  // Escreve na tela um circulo e um texto
+	
+	// Escreve na tela um circulo e um texto
 	gfx_mono_draw_filled_circle(20, 16, 16, GFX_PIXEL_SET, GFX_WHOLE);
-  gfx_mono_draw_string("mundo", 50,16, &sysfont);
+	gfx_mono_draw_string("mundo", 50,16, &sysfont);
 
-  /* Insert application code here, after the board has been initialized. */
+	/* Insert application code here, after the board has been initialized. */
 	while(1) {
 
 	}
