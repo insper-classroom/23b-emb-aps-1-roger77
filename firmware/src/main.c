@@ -4,6 +4,37 @@
 #include "gfx_mono_text.h"
 #include "sysfont.h"
 
+#define BUZZER_PIO PIOD
+#define BUZZER_PIO_ID ID_PIOD
+#define BUZZER_PIO_IDX 27
+#define BUZZER_PIO_IDX_MASK (1u << BUZZER_PIO_IDX)
+
+//Funcoes
+
+void set_buzzer(Pio *p_pio, const uint32_t ul_mask){
+	p_pio->PIO_SODR = ul_mask;
+}
+
+void clear_buzzer(Pio *p_pio, const uint32_t ul_mask)
+{
+	p_pio->PIO_CODR = ul_mask;
+}
+
+void init(void){
+	  // Initialize the board clock
+	  sysclk_init();
+
+	  // Desativa WatchDog Timer
+	  WDT->WDT_MR = WDT_MR_WDDIS;
+	  
+	  //Inicializando saida
+	  pmc_enable_periph_clk(BUZZER_PIO_ID);
+	  
+	  pio_set_output(BUZZER_PIO, BUZZER_PIO_IDX_MASK, 0, 0, 0);
+	  
+	  
+}
+
 int main (void)
 {
 	board_init();
