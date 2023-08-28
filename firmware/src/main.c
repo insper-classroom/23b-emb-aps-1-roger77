@@ -14,6 +14,11 @@
 #define BUT2_PIO_IDX		    31
 #define BUT2_PIO_IDX_MASK		(1u << BUT2_PIO_IDX)
 
+#define BUT1_PIO PIOD
+#define BUT1_PIO_ID ID_PIOD
+#define BUT1_PIO_IDX 28
+#define BUT1_PIO_IDX_MASK (1u << BUT1_PIO_IDX)
+
 // Funções
 void set_buzzer(){
 	pio_set(BUZZER_PIO_ID, BUZZER_PIO_IDX_MASK);
@@ -25,6 +30,13 @@ void clear_buzzer(){
 
 int get_startstop(){
 	if(pio_get(BUT2_PIO_ID, PIO_INPUT, BUT2_PIO_IDX_MASK )){
+		return 0;
+	}
+	return 1;
+}
+
+int get_selecao(){
+	if(pio_get(BUT1_PIO_ID, PIO_INPUT, BUT1_PIO_IDX_MASK )){
 		return 0;
 	}
 	return 1;
@@ -45,13 +57,19 @@ void init(void) {
 	  
 	  pio_pull_up(BUZZER_PIO, BUZZER_PIO_IDX_MASK, 1);
 	  
-	  // Inicializando entrada (botão 2)
+	  // Inicializando Start/Stop (botão 2)
 	  pmc_enable_periph_clk(BUT2_PIO_ID);
 	  
 	  pio_set_input(BUT2_PIO, BUT2_PIO_IDX_MASK, PIO_DEFAULT);
 
 	  pio_pull_up(BUT2_PIO, BUT2_PIO_IDX_MASK, 1);
 	  
+	  // Inicializando Seleção (botão 1)
+	  pmc_enable_periph_clk(BUT1_PIO_ID);
+	  
+	  pio_set_input(BUT1_PIO, BUT1_PIO_IDX_MASK, PIO_DEFAULT);
+	  
+	  pio_pull_up(BUT1_PIO, BUT1_PIO_IDX_MASK, 1);
 }
 
 int main (void)
