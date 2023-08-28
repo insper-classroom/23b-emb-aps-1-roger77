@@ -9,29 +9,48 @@
 #define BUZZER_PIO_IDX 27
 #define BUZZER_PIO_IDX_MASK (1u << BUZZER_PIO_IDX)
 
-//Funcoes
+#define BUT2_PIO				PIOC
+#define BUT2_PIO_ID				ID_PIOC
+#define BUT2_PIO_IDX		    31
+#define BUT2_PIO_IDX_MASK		(1u << BUT2_PIO_IDX)
 
-void set_buzzer(Pio *p_pio, const uint32_t ul_mask){
-	p_pio->PIO_SODR = ul_mask;
+// Funções
+void set_buzzer(){
+	pio_set(BUZZER_PIO_ID, BUZZER_PIO_IDX_MASK);
 }
 
-void clear_buzzer(Pio *p_pio, const uint32_t ul_mask)
-{
-	p_pio->PIO_CODR = ul_mask;
+void clear_buzzer(){
+	pio_clear(BUZZER_PIO_ID, BUZZER_PIO_IDX_MASK);
 }
 
-void init(void){
+int get_startstop(){
+	if(pio_get(BUT2_PIO_ID, PIO_INPUT, BUT2_PIO_IDX_MASK )){
+		return 0;
+	}
+	return 1;
+}
+
+// Função init()
+void init(void) {
 	  // Initialize the board clock
 	  sysclk_init();
 
 	  // Desativa WatchDog Timer
 	  WDT->WDT_MR = WDT_MR_WDDIS;
 	  
-	  //Inicializando saida
+	  //Inicializando saída (buzzer)
 	  pmc_enable_periph_clk(BUZZER_PIO_ID);
 	  
 	  pio_set_output(BUZZER_PIO, BUZZER_PIO_IDX_MASK, 0, 0, 0);
 	  
+	  pio_pull_up(BUZZER_PIO, BUZZER_PIO_IDX_MASK, 1);
+	  
+	  // Inicializando entrada (botão 2)
+	  pmc_enable_periph_clk(BUT2_PIO_ID);
+	  
+	  pio_set_input(BUT2_PIO, BUT2_PIO_IDX_MASK, PIO_DEFAULT);
+
+	  pio_pull_up(BUT2_PIO, BUT2_PIO_IDX_MASK, 1);
 	  
 }
 
