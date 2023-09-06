@@ -42,6 +42,19 @@ int get_selecao(){
 	return 1;
 }
 
+void buzzer_test(int freq) {
+	int half_period_ms = 500 / freq;
+
+	while(1) {
+		pio_set(BUZZER_PIO, BUZZER_PIO_IDX_MASK);  // Liga o buzzer
+		delay_ms(half_period_ms);  // Aguarda meio período
+
+		pio_clear(BUZZER_PIO, BUZZER_PIO_IDX_MASK);  // Desliga o buzzer
+		delay_ms(half_period_ms);  // Aguarda meio período
+	}
+}
+
+
 // Função init()
 void init(void) {
 	// Initialize the board clock
@@ -77,14 +90,18 @@ int main (void)
 	board_init();
 	sysclk_init();
 	delay_init();
+	
+	init();
 
 	// Init OLED
 	gfx_mono_ssd1306_init();
 	
 	// Escreve na tela um circulo e um texto
 	gfx_mono_draw_filled_circle(20, 16, 16, GFX_PIXEL_SET, GFX_WHOLE);
-	gfx_mono_draw_string("mundo", 50,16, &sysfont);
-
+	gfx_mono_draw_string("Issue 4", 50,16, &sysfont);
+	
+	buzzer_test(500);
+	
 	/* Insert application code here, after the board has been initialized. */
 	while(1) {
 
