@@ -6,6 +6,7 @@
 
 #include "mariobros.h"
 #include "zeldastheme.h"
+#include "asabranca.h"
 
 #define BUZZER_PIO PIOD
 #define BUZZER_PIO_ID ID_PIOD
@@ -33,7 +34,7 @@ void but1_callback(void);
 void but2_callback(void);
 
 void but1_callback(void) {
-	but1_flag = !but1_flag;
+	but1_flag = 1;
 }
 
 void but2_callback(void) {
@@ -48,11 +49,8 @@ typedef struct {
 	char* nome;
 	int* notasEDuracoes;
 	int tamanho;
+	int tempo;
 } Musica;
-
-Musica mario = {"Mario", melody_mario, sizeof(melody_mario)/sizeof(melody_mario[0])};
-	
-Musica zelda_theme = {"Zelda", melody_zelda, sizeof(melody_zelda)/sizeof(melody_zelda[0])};
 
 // Funções
 void set_buzzer(){
@@ -133,6 +131,10 @@ void init(void) {
 
 	pio_pull_up(BUT2_PIO, BUT2_PIO_IDX_MASK, 1);
 	
+	pio_configure(BUT2_PIO, PIO_INPUT, BUT2_PIO_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+		
+	pio_set_debounce_filter(BUT2_PIO, BUT2_PIO_IDX_MASK, 60);
+	
 	// Inicializando Seleção (botão 1)
 	pmc_enable_periph_clk(BUT1_PIO_ID);
 	
@@ -140,9 +142,9 @@ void init(void) {
 	
 	pio_pull_up(BUT1_PIO, BUT1_PIO_IDX_MASK, 1);
 	
-	pio_configure(BUT2_PIO, PIO_INPUT, BUT2_PIO_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+	pio_configure(BUT1_PIO, PIO_INPUT, BUT1_PIO_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
 	
-	pio_set_debounce_filter(BUT2_PIO, BUT2_PIO_IDX_MASK, 60);
+	pio_set_debounce_filter(BUT1_PIO, BUT1_PIO_IDX_MASK, 60);
 	
 	// Configura interrupção no pino referente ao botao e associa
 	// função de callback caso uma interrupção for gerada		// a função de callback é a: but_callback()
@@ -150,7 +152,7 @@ void init(void) {
 	pio_handler_set(BUT1_PIO,
 	BUT1_PIO_ID,
 	BUT1_PIO_IDX_MASK,
-	PIO_IT_RISE_EDGE,
+	PIO_IT_FALL_EDGE,
 	but1_callback);
 	
 	pio_handler_set(BUT2_PIO,
@@ -189,19 +191,26 @@ int main (void){
 	// Init OLED
 	gfx_mono_ssd1306_init();
 	
-	int tempo = 350;
-
-	int notes_mario = sizeof(melody_mario) / sizeof(melody_mario[0]) / 2;
-			
-	int notes_zelda = sizeof(melody_zelda) / sizeof(melody_zelda[0]) / 2;
+	//criando musicas
+	Musica mario = {"Mario", melody_mario, sizeof(melody_mario)/sizeof(melody_mario[0]), 350};
+	Musica zelda = {"Zelda", melody_zelda, sizeof(melody_zelda)/sizeof(melody_zelda[0]), 88};
+	Musica asabranca = {"AB", melody_ab, sizeof(melody_ab)/sizeof(melody_ab[0]), 120};
+	
+	// Musica atual
+	
+	Musica musicas[] = {mario, zelda, asabranca};
+		
+	int id_musica = 0;
+	
+	Musica musicaAtual = musicas[id_musica];
+	
+	int tamanho = musicaAtual.tamanho;
+	
+	int tempo = musicaAtual.tempo;
 
 	int wholenote = (60000 * 4) / tempo;
 
 	int divider = 0, noteDuration = 0;
-	
-	// Musica atual
-	Musica musicaAtual = mario;
-	int tamanho = musicaAtual.tamanho;
 	
 	gfx_mono_draw_string(musicaAtual.nome, 50,16, &sysfont);
 	
@@ -211,6 +220,21 @@ int main (void){
 			// Verifica se o botão de pausa foi pressionado
 			while(but2_flag) {
 				gfx_mono_draw_string("    PAUSE    ", 0, 16, &sysfont);
+			}
+			
+			if(but1_flag){
+				if(id_musica > 3){
+					id_musica = 0;
+				}
+				id_musica = (id_musica + 1); // Alteração aqui: evita ir além do índice válido
+				musicaAtual = musicas[id_musica]; // Atualiza a música atual baseando-se no novo id_musica
+				tamanho = musicaAtual.tamanho; // Atualiza as variáveis relacionadas à nova música
+				tempo = musicaAtual.tempo;
+				wholenote = (60000 * 4) / tempo;
+				gfx_mono_draw_string("            ", 0, 16, &sysfont);
+				gfx_mono_draw_string(musicaAtual.nome, 50, 16, &sysfont); // Mostra o nome da nova música
+				thisNote = -2; // Reseta o índice de nota para começar a nova música do início
+				but1_flag = 0; // Reseta a flag
 			}
 			
 			gfx_mono_draw_string("            ", 0, 16, &sysfont);

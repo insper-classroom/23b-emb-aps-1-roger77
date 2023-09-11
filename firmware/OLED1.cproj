@@ -558,6 +558,9 @@
     <Folder Include="src\oled" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\asabranca.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\ASF\sam\drivers\spi\spi.c">
       <SubType>compile</SubType>
     </Compile>
