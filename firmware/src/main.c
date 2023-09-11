@@ -22,6 +22,28 @@
 #define BUT1_PIO_IDX 28
 #define BUT1_PIO_IDX_MASK (1u << BUT1_PIO_IDX)
 
+//flags
+
+volatile char but1_flag;
+volatile char but2_flag;
+volatile char display_flag;
+
+//callbacks
+void but1_callback(void);
+void but2_callback(void);
+
+void but1_callback(void) {
+	but1_flag = !but1_flag;
+}
+
+void but2_callback(void) {
+	but2_flag = !but2_flag;
+}
+
+void display_callback(void) {
+	display_flag =!display_flag;
+}
+
 // Melodia Mario
 
 typedef struct {
@@ -74,12 +96,21 @@ void tone(int freq, int time){
 	int periodo = 1000000/freq;
 	int t = freq*time/1000;
 	
+	if(freq == 0){
+		delay_ms(time);
+		return;
+	}
+	
 	for(int i = 0; i < t; i++){
 		pio_set(BUZZER_PIO, BUZZER_PIO_IDX_MASK);  // Liga o buzzer
 		delay_us(periodo/2);  // Aguarda meio período
 		pio_clear(BUZZER_PIO, BUZZER_PIO_IDX_MASK);  // Desliga o buzzer
 		delay_us(periodo/2);  // Aguarda meio período
 	}
+}
+
+void loop_musica(){
+	
 }
 
 // Função init()
@@ -110,20 +141,42 @@ void init(void) {
 	pio_set_input(BUT1_PIO, BUT1_PIO_IDX_MASK, PIO_DEFAULT);
 	
 	pio_pull_up(BUT1_PIO, BUT1_PIO_IDX_MASK, 1);
+	
+	// Configura interrupção no pino referente ao botao e associa
+	// função de callback caso uma interrupção for gerada		// a função de callback é a: but_callback()
+	
+	pio_handler_set(BUT1_PIO,
+	BUT1_PIO_ID,
+	BUT1_PIO_IDX_MASK,
+	PIO_IT_RISE_EDGE,
+	but1_callback);
+	
+	pio_handler_set(BUT2_PIO,
+	BUT2_PIO_ID,
+	BUT2_PIO_IDX_MASK,
+	PIO_IT_FALL_EDGE,
+	but2_callback);
+	
+	// Ativa interrupção e limpa primeira IRQ gerada na ativacao
+	
+	pio_enable_interrupt(BUT1_PIO, BUT1_PIO_IDX_MASK);
+	pio_get_interrupt_status(BUT1_PIO);
+	
+	pio_enable_interrupt(BUT2_PIO, BUT2_PIO_IDX_MASK);
+	pio_get_interrupt_status(BUT2_PIO);
+	
+	// Configura NVIC para receber interrupcoes do PIO do botao
+	// com prioridade 4 (quanto mais próximo de 0 maior)
+	
+	NVIC_EnableIRQ(BUT1_PIO_ID);
+	NVIC_SetPriority(BUT1_PIO_ID, 4); // Prioridade 4
+	
+	NVIC_EnableIRQ(BUT2_PIO_ID);
+	NVIC_SetPriority(BUT2_PIO_ID, 4); // Prioridade 4
 
 }
 
 int main (void){
-	
-	int tempo = 350;
-
-	int notes_mario = sizeof(melody_mario) / sizeof(melody_mario[0]) / 2;
-	
-	int notes_zelda = sizeof(melody_zelda) / sizeof(melody_zelda[0]) / 2;
-
-	int wholenote = (60000 * 4) / tempo;
-
-	int divider = 0, noteDuration = 0;
 	
 	board_init();
 	sysclk_init();
@@ -134,26 +187,43 @@ int main (void){
 	// Init OLED
 	gfx_mono_ssd1306_init();
 	
+	int tempo = 350;
+
+	int notes_mario = sizeof(melody_mario) / sizeof(melody_mario[0]) / 2;
+			
+	int notes_zelda = sizeof(melody_zelda) / sizeof(melody_zelda[0]) / 2;
+
+	int wholenote = (60000 * 4) / tempo;
+
+	int divider = 0, noteDuration = 0;
+	
 	// Musica atual
 	Musica musicaAtual = mario;
 	int tamanho = musicaAtual.tamanho;
 	
-	// Escreve na tela um circulo e um texto
-	gfx_mono_draw_filled_circle(20, 16, 16, GFX_PIXEL_SET, GFX_WHOLE);
 	gfx_mono_draw_string(musicaAtual.nome, 50,16, &sysfont);
 	
 	/* Insert application code here, after the board has been initialized. */
 	while(1) {
 		for (int thisNote = 0; thisNote < tamanho; thisNote += 2) {
+			// Verifica se o botão de pausa foi pressionado
+			while(but2_flag) {
+				gfx_mono_draw_string("    PAUSE    ", 0, 16, &sysfont);
+			}
+			
+			gfx_mono_draw_string("            ", 0, 16, &sysfont);
+			gfx_mono_draw_string(musicaAtual.nome, 50, 16, &sysfont);
+
+			// Código existente para tocar uma nota
 			int note = musicaAtual.notasEDuracoes[thisNote];
 			int duracao = musicaAtual.notasEDuracoes[thisNote + 1];
 			divider = duracao;
-			
+
 			if (divider > 0) {
 				noteDuration = (wholenote) / divider;
 				} else if (divider < 0) {
 				noteDuration = (wholenote) / abs(divider);
-				noteDuration *= 1.5;
+				noteDuration *= 1.5; // Dotted notes are represented with negative durations
 			}
 
 			tone(note, noteDuration*0.9);
