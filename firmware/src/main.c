@@ -114,7 +114,7 @@
 
 // Melodia Mario
 
-int melody[] = {
+int melody_mario[] = {
 
 	// Super Mario Bros theme
 	// Score available at https://musescore.com/user/2123/scores/2145
@@ -206,16 +206,6 @@ int melody[] = {
 
 };
 
-// Variaveis
-
-int tempo = 200;
-
-int notes = sizeof(melody) / sizeof(melody[0]) / 2;
-
-int wholenote = (60000 * 4) / tempo;
-
-int divider = 0, noteDuration = 0;
-
 // Funções
 void set_buzzer(){
 	pio_set(BUZZER_PIO_ID, BUZZER_PIO_IDX_MASK);
@@ -253,13 +243,14 @@ void buzzer_test(int freq) {
 
 void tone(int freq, int time){
 	
-	int meia_freq = freq/2;
+	int periodo = 1000000/freq;
+	int t = freq*time/1000;
 	
-	for(int i = 0; i < time; i++){
+	for(int i = 0; i < t; i++){
 		pio_set(BUZZER_PIO, BUZZER_PIO_IDX_MASK);  // Liga o buzzer
-		delay_us(meia_freq);  // Aguarda meio período
+		delay_us(periodo/2);  // Aguarda meio período
 		pio_clear(BUZZER_PIO, BUZZER_PIO_IDX_MASK);  // Desliga o buzzer
-		delay_us(meia_freq);  // Aguarda meio período
+		delay_us(periodo/2);  // Aguarda meio período
 	}
 }
 
@@ -293,8 +284,16 @@ void init(void) {
 	pio_pull_up(BUT1_PIO, BUT1_PIO_IDX_MASK, 1);
 }
 
-int main (void)
-{
+int main (void){
+	
+	int tempo = 350;
+
+	int notes = sizeof(melody_mario) / sizeof(melody_mario[0]) / 2;
+
+	int wholenote = (60000 * 4) / tempo;
+
+	int divider = 0, noteDuration = 0;
+	
 	board_init();
 	sysclk_init();
 	delay_init();
@@ -308,13 +307,32 @@ int main (void)
 	gfx_mono_draw_filled_circle(20, 16, 16, GFX_PIXEL_SET, GFX_WHOLE);
 	gfx_mono_draw_string("Issue 5", 50,16, &sysfont);
 	
-	for (int freq=200; freq<5000; freq+=500){
-		tone(freq, 200 + freq/2);
-		delay_ms(200);
-	}
 	
 	/* Insert application code here, after the board has been initialized. */
 	while(1) {
+	
+	for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
 
+		// calculates the duration of each note
+		divider = melody_mario[thisNote + 1];
+		if (divider > 0) {
+			// regular note, just proceed
+			noteDuration = (wholenote) / divider;
+			} else if (divider < 0) {
+			// dotted notes are represented with negative durations!!
+			noteDuration = (wholenote) / abs(divider);
+			noteDuration *= 1.5; // increases the duration in half for dotted notes
+		}
+
+		// we only play the note for 90% of the duration, leaving 10% as a pause
+		tone(melody_mario[thisNote], noteDuration*0.9);
+
+		// Wait for the specief duration before playing the next note.
+		delay_ms(noteDuration);
+
+		// stop the waveform generation before the next note.
+	
+		}
 	}
 }
+
