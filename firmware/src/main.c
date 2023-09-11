@@ -37,18 +37,12 @@ void but1_callback(void) {
 }
 
 void but2_callback(void) {
-	if(but2_flag){
-		but2_flag = 0;
-	} else {
-	but2_flag = 1;
-	}
+	but2_flag = !but2_flag;
 }
 
 void display_callback(void) {
 	display_flag =!display_flag;
 }
-
-// Melodia Mario
 
 typedef struct {
 	char* nome;
@@ -97,8 +91,8 @@ void buzzer_test(int freq) {
 
 void tone(int freq, int time){
 	
-	int periodo = 1000000/freq;
-	int t = freq*time/1000;
+	int periodo = 1000000 / freq;
+	int t = freq * time / 1000;
 	
 	if(freq == 0){
 		delay_ms(time);
@@ -106,10 +100,10 @@ void tone(int freq, int time){
 	}
 	
 	for(int i = 0; i < t; i++){
-		pio_set(BUZZER_PIO, BUZZER_PIO_IDX_MASK);  // Liga o buzzer
-		delay_us(periodo/2);  // Aguarda meio período
+		pio_set(BUZZER_PIO, BUZZER_PIO_IDX_MASK);    // Liga o buzzer
+		delay_us(periodo/2);						 // Aguarda meio período
 		pio_clear(BUZZER_PIO, BUZZER_PIO_IDX_MASK);  // Desliga o buzzer
-		delay_us(periodo/2);  // Aguarda meio período
+		delay_us(periodo/2);						 // Aguarda meio período
 	}
 }
 
@@ -145,6 +139,10 @@ void init(void) {
 	pio_set_input(BUT1_PIO, BUT1_PIO_IDX_MASK, PIO_DEFAULT);
 	
 	pio_pull_up(BUT1_PIO, BUT1_PIO_IDX_MASK, 1);
+	
+	pio_configure(BUT2_PIO, PIO_INPUT, BUT2_PIO_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+	
+	pio_set_debounce_filter(BUT2_PIO, BUT2_PIO_IDX_MASK, 60);
 	
 	// Configura interrupção no pino referente ao botao e associa
 	// função de callback caso uma interrupção for gerada		// a função de callback é a: but_callback()
