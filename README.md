@@ -18,13 +18,16 @@ TODO: Aualizar pinos
 |---------|-----------------|
 | BUZZER  |      PD27       |
 | START   |    PC31         |
-| SELEÇÃO |                 |
+| SELEÇÃO |       PD28      |
 
 ### Imagem da montagem
 
 TODO: Inserir imagem do sistema montado
 
 ### Vídeo do projeto
+
+função buzzer_test funcionando:
+https://youtube.com/shorts/_tB3ZNRSGLM?si=V0xtW85mHjZ9sCRf
 
 TODO: Inserir link para vídeo do projeto funcionando
 
