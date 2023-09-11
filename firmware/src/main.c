@@ -5,6 +5,7 @@
 #include "sysfont.h"
 
 #include "mariobros.h"
+#include "zeldastheme.h"
 
 #define BUZZER_PIO PIOD
 #define BUZZER_PIO_ID ID_PIOD
@@ -30,6 +31,8 @@ typedef struct {
 } Musica;
 
 Musica mario = {"Mario", melody_mario, sizeof(melody_mario)/sizeof(melody_mario[0])};
+	
+Musica zelda_theme = {"Zelda", melody_zelda, sizeof(melody_zelda)/sizeof(melody_zelda[0])};
 
 // Funções
 void set_buzzer(){
@@ -114,7 +117,9 @@ int main (void){
 	
 	int tempo = 350;
 
-	int notes = sizeof(melody_mario) / sizeof(melody_mario[0]) / 2;
+	int notes_mario = sizeof(melody_mario) / sizeof(melody_mario[0]) / 2;
+	
+	int notes_zelda = sizeof(melody_zelda) / sizeof(melody_zelda[0]) / 2;
 
 	int wholenote = (60000 * 4) / tempo;
 
