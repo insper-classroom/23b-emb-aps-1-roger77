@@ -37,7 +37,11 @@ void but1_callback(void) {
 }
 
 void but2_callback(void) {
-	but2_flag = !but2_flag;
+	if(but2_flag){
+		but2_flag = 0;
+	} else {
+	but2_flag = 1;
+	}
 }
 
 void display_callback(void) {
