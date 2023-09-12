@@ -5,33 +5,43 @@
 #include "sysfont.h"
 
 #include "mariobros.h"
+#include "starwars.h"
 #include "zeldastheme.h"
 #include "asabranca.h"
+#include "nggyu.h"
 
 #define BUZZER_PIO PIOD
 #define BUZZER_PIO_ID ID_PIOD
 #define BUZZER_PIO_IDX 27
 #define BUZZER_PIO_IDX_MASK (1u << BUZZER_PIO_IDX)
 
-#define BUT2_PIO				PIOC
-#define BUT2_PIO_ID				ID_PIOC
-#define BUT2_PIO_IDX		    31
-#define BUT2_PIO_IDX_MASK		(1u << BUT2_PIO_IDX)
-
 #define BUT1_PIO PIOD
 #define BUT1_PIO_ID ID_PIOD
 #define BUT1_PIO_IDX 28
 #define BUT1_PIO_IDX_MASK (1u << BUT1_PIO_IDX)
 
+#define BUT2_PIO				PIOC
+#define BUT2_PIO_ID				ID_PIOC
+#define BUT2_PIO_IDX		    31
+#define BUT2_PIO_IDX_MASK		(1u << BUT2_PIO_IDX)
+
+#define BUT3_PIO PIOA
+#define BUT3_PIO_ID ID_PIOA
+#define BUT3_PIO_IDX 19
+#define BUT3_PIO_IDX_MASK (1u<< BUT3_PIO_IDX)
+
 //flags
 
 volatile char but1_flag;
 volatile char but2_flag;
+volatile char but3_flag;
 volatile char display_flag;
+volatile char pause_display_flag;
 
 //callbacks
 void but1_callback(void);
 void but2_callback(void);
+void but3_callback(void);
 
 void but1_callback(void) {
 	but1_flag = 1;
@@ -41,8 +51,8 @@ void but2_callback(void) {
 	but2_flag = !but2_flag;
 }
 
-void display_callback(void) {
-	display_flag =!display_flag;
+void but3_callback(void) {
+	but3_flag = !but3_flag;
 }
 
 typedef struct {
@@ -124,18 +134,7 @@ void init(void) {
 	
 	pio_pull_up(BUZZER_PIO, BUZZER_PIO_IDX_MASK, 1);
 	
-	// Inicializando Start/Stop (botão 2)
-	pmc_enable_periph_clk(BUT2_PIO_ID);
-	
-	pio_set_input(BUT2_PIO, BUT2_PIO_IDX_MASK, PIO_DEFAULT);
-
-	pio_pull_up(BUT2_PIO, BUT2_PIO_IDX_MASK, 1);
-	
-	pio_configure(BUT2_PIO, PIO_INPUT, BUT2_PIO_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
-		
-	pio_set_debounce_filter(BUT2_PIO, BUT2_PIO_IDX_MASK, 60);
-	
-	// Inicializando Seleção (botão 1)
+	// Inicializando GoBack (botão 1)
 	pmc_enable_periph_clk(BUT1_PIO_ID);
 	
 	pio_set_input(BUT1_PIO, BUT1_PIO_IDX_MASK, PIO_DEFAULT);
@@ -145,6 +144,28 @@ void init(void) {
 	pio_configure(BUT1_PIO, PIO_INPUT, BUT1_PIO_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
 	
 	pio_set_debounce_filter(BUT1_PIO, BUT1_PIO_IDX_MASK, 60);
+	
+	// Inicializando Start/Stop (botão 2)
+	pmc_enable_periph_clk(BUT2_PIO_ID);
+	
+	pio_set_input(BUT2_PIO, BUT2_PIO_IDX_MASK, PIO_DEFAULT);
+
+	pio_pull_up(BUT2_PIO, BUT2_PIO_IDX_MASK, 1);
+	
+	pio_configure(BUT2_PIO, PIO_INPUT, BUT2_PIO_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+	
+	pio_set_debounce_filter(BUT2_PIO, BUT2_PIO_IDX_MASK, 60);
+	
+	// Inicializando GoFoward (botão 2)
+	pmc_enable_periph_clk(BUT3_PIO_ID);
+	
+	pio_set_input(BUT3_PIO, BUT3_PIO_IDX_MASK, PIO_DEFAULT);
+
+	pio_pull_up(BUT3_PIO, BUT3_PIO_IDX_MASK, 1);
+	
+	pio_configure(BUT3_PIO, PIO_INPUT, BUT3_PIO_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+	
+	pio_set_debounce_filter(BUT3_PIO, BUT3_PIO_IDX_MASK, 60);
 	
 	// Configura interrupção no pino referente ao botao e associa
 	// função de callback caso uma interrupção for gerada		// a função de callback é a: but_callback()
@@ -161,6 +182,12 @@ void init(void) {
 	PIO_IT_FALL_EDGE,
 	but2_callback);
 	
+	pio_handler_set(BUT3_PIO,
+	BUT3_PIO_ID,
+	BUT3_PIO_IDX_MASK,
+	PIO_IT_FALL_EDGE,
+	but3_callback);
+	
 	// Ativa interrupção e limpa primeira IRQ gerada na ativacao
 	
 	pio_enable_interrupt(BUT1_PIO, BUT1_PIO_IDX_MASK);
@@ -168,6 +195,9 @@ void init(void) {
 	
 	pio_enable_interrupt(BUT2_PIO, BUT2_PIO_IDX_MASK);
 	pio_get_interrupt_status(BUT2_PIO);
+	
+	pio_enable_interrupt(BUT3_PIO, BUT3_PIO_IDX_MASK);
+	pio_get_interrupt_status(BUT3_PIO);
 	
 	// Configura NVIC para receber interrupcoes do PIO do botao
 	// com prioridade 4 (quanto mais próximo de 0 maior)
@@ -177,6 +207,9 @@ void init(void) {
 	
 	NVIC_EnableIRQ(BUT2_PIO_ID);
 	NVIC_SetPriority(BUT2_PIO_ID, 4); // Prioridade 4
+	
+	NVIC_EnableIRQ(BUT3_PIO_ID);
+	NVIC_SetPriority(BUT3_PIO_ID, 4); // Prioridade 4
 
 }
 
@@ -193,12 +226,13 @@ int main (void){
 	
 	//criando musicas
 	Musica mario = {"Mario", melody_mario, sizeof(melody_mario)/sizeof(melody_mario[0]), 350};
-	Musica zelda = {"Zelda", melody_zelda, sizeof(melody_zelda)/sizeof(melody_zelda[0]), 88};
-	Musica asabranca = {"AB", melody_ab, sizeof(melody_ab)/sizeof(melody_ab[0]), 120};
+	Musica starwars1 = {"ST1", melody_st1, sizeof(melody_st1)/sizeof(melody_st1[0]), 400};
+	Musica starwars2 = {"ST2", melody_st2, sizeof(melody_st2)/sizeof(melody_st2[0]), 200};
+	Musica zelda = {"Zelda", melody_zelda, sizeof(melody_zelda)/sizeof(melody_zelda[0]), 240};
+	Musica asabranca = {"AsaBr.", melody_ab, sizeof(melody_ab)/sizeof(melody_ab[0]), 200};
+	Musica nggyu = {"RickA.", melody_nggyu, sizeof(melody_nggyu)/sizeof(melody_nggyu[0]), 200};
 	
-	// Musica atual
-	
-	Musica musicas[] = {mario, zelda, asabranca};
+	Musica musicas[] = {mario, starwars1, starwars2, zelda, asabranca, nggyu};
 		
 	int id_musica = 0;
 	
@@ -217,28 +251,44 @@ int main (void){
 	/* Insert application code here, after the board has been initialized. */
 	while(1) {
 		for (int thisNote = 0; thisNote < tamanho; thisNote += 2) {
-			// Verifica se o botão de pausa foi pressionado
-			while(but2_flag) {
-				gfx_mono_draw_string("    PAUSE    ", 0, 16, &sysfont);
-			}
+			pause_display_flag = 1;
 			
-			if(but1_flag){
-				if(id_musica > 3){
-					id_musica = 0;
+			while(but2_flag) {
+				if(pause_display_flag) {
+					gfx_mono_draw_string("    PAUSE    ", 0, 16, &sysfont);
+					pause_display_flag = 0;
 				}
-				id_musica = (id_musica + 1); // Alteração aqui: evita ir além do índice válido
-				musicaAtual = musicas[id_musica]; // Atualiza a música atual baseando-se no novo id_musica
-				tamanho = musicaAtual.tamanho; // Atualiza as variáveis relacionadas à nova música
+				display_flag = 1;
+			}
+
+			if (but1_flag) {
+				id_musica = (id_musica - 1 + 6) % 6; // Volta para a música anterior
+				musicaAtual = musicas[id_musica];
+				tamanho = musicaAtual.tamanho;
 				tempo = musicaAtual.tempo;
 				wholenote = (60000 * 4) / tempo;
-				gfx_mono_draw_string("            ", 0, 16, &sysfont);
-				gfx_mono_draw_string(musicaAtual.nome, 50, 16, &sysfont); // Mostra o nome da nova música
-				thisNote = -2; // Reseta o índice de nota para começar a nova música do início
+				thisNote = -2;
 				but1_flag = 0; // Reseta a flag
+				display_flag = 1; // Define a flag de exibição
+			}
+
+			if (but3_flag) {
+				id_musica = (id_musica + 1) % 6; // Vai para a próxima música
+				musicaAtual = musicas[id_musica];
+				tamanho = musicaAtual.tamanho;
+				tempo = musicaAtual.tempo;
+				wholenote = (60000 * 4) / tempo;
+				thisNote = -2;
+				but3_flag = 0; // Reseta a flag
+				display_flag = 1; // Define a flag de exibição
 			}
 			
-			gfx_mono_draw_string("            ", 0, 16, &sysfont);
-			gfx_mono_draw_string(musicaAtual.nome, 50, 16, &sysfont);
+			// Verifica se a flag de exibição está definida
+			if (display_flag) {
+				gfx_mono_draw_string("            ", 0, 16, &sysfont);
+				gfx_mono_draw_string(musicaAtual.nome, 50, 16, &sysfont);
+				display_flag = 0; // Limpa a flag de exibição
+			}
 
 			// Código existente para tocar uma nota
 			int note = musicaAtual.notasEDuracoes[thisNote];
