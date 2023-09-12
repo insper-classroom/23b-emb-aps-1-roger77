@@ -171,6 +171,14 @@ void loop_musica(int tamanho, int id_musica, int tempo, int wholenote, int divid
 		for (int thisNote = 0; thisNote < tamanho; thisNote += 2) {
 			pause_display_flag = 1;
 			
+			// Cálculo do progresso atual
+			float progress = (float)thisNote / (float)tamanho;
+			int progressWidth = (int)(progress * 128);
+
+			// Desenhando a barra de progresso
+			gfx_mono_draw_filled_rect(0, 0, progressWidth, 10, GFX_PIXEL_SET);
+			gfx_mono_draw_filled_rect(progressWidth, 0, 128 - progressWidth, 10, GFX_PIXEL_CLR);
+			
 			while(but2_flag) {
 				if(pause_display_flag) {
 					gfx_mono_draw_string("    PAUSE    ", 0, 16, &sysfont);
