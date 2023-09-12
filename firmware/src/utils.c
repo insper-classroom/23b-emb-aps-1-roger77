@@ -14,17 +14,6 @@ void clear_buzzer(){
 	pio_clear(BUZZER_PIO, BUZZER_PIO_IDX_MASK);
 }
 
-void buzzer_test(int freq) {
-	int meia_freq = freq/2;
-
-	while(1) {
-		set_buzzer();                                // Liga o buzzer
-		delay_us(meia_freq);                         // Aguarda meio período
-		clear_buzzer();                              // Desliga o buzzer
-		delay_us(meia_freq);                         // Aguarda meio período
-	}
-}
-
 // Função init()
 void init(void) {
 	// Initialize the board clock

@@ -69,8 +69,6 @@ void set_buzzer(void);
 
 void clear_buzzer(void);
 
-void buzzer_test(int freq);
-
 void init(void);
 
 void tone(int freq, int time);
