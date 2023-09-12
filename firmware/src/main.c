@@ -35,6 +35,21 @@
 #define LED_PIO_IDX       8
 #define LED_PIO_IDX_MASK  (1 << LED_PIO_IDX)
 
+#define LED1_PIO   PIOA
+#define LED1_PIO_ID ID_PIOA
+#define LED1_PIO_IDX     0
+#define LED1_PIO_IDX_MASK  (1<<LED1_PIO_IDX)
+
+#define LED2_PIO   PIOC
+#define LED2_PIO_ID ID_PIOC
+#define LED2_PIO_IDX     30
+#define LED2_PIO_IDX_MASK  (1<<LED2_PIO_IDX)
+
+#define LED3_PIO   PIOB
+#define LED3_PIO_ID ID_PIOB
+#define LED3_PIO_IDX     2
+#define LED3_PIO_IDX_MASK  (1<<LED3_PIO_IDX)
+
 //flags
 
 volatile char but1_flag;
@@ -114,9 +129,17 @@ void tone(int freq, int time){
 	
 	for(int i = 0; i < t; i++){
 		pio_set(BUZZER_PIO, BUZZER_PIO_IDX_MASK);    // Liga o buzzer
+		pio_clear(LED_PIO, LED_PIO_IDX_MASK);
+		pio_clear(LED1_PIO, LED1_PIO_IDX_MASK);
+		pio_clear(LED2_PIO, LED2_PIO_IDX_MASK);
+		pio_clear(LED3_PIO, LED3_PIO_IDX_MASK);
 		delay_us(periodo/2);						 // Aguarda meio período
 		pio_clear(BUZZER_PIO, BUZZER_PIO_IDX_MASK);  // Desliga o buzzer
 		delay_us(periodo/2);						 // Aguarda meio período
+		pio_set(LED_PIO, LED_PIO_IDX_MASK);
+		pio_set(LED1_PIO, LED1_PIO_IDX_MASK);
+		pio_set(LED2_PIO, LED2_PIO_IDX_MASK);
+		pio_set(LED3_PIO, LED3_PIO_IDX_MASK);
 	}
 }
 
@@ -176,6 +199,18 @@ void init(void) {
 	pmc_enable_periph_clk(LED_PIO_ID);
 	
 	pio_configure(LED_PIO, PIO_OUTPUT_0,LED_PIO_IDX_MASK, PIO_DEFAULT);
+	
+	pmc_enable_periph_clk(LED1_PIO_ID);
+	
+	pio_configure(LED1_PIO, PIO_OUTPUT_0,LED1_PIO_IDX_MASK, PIO_DEFAULT);
+	
+	pmc_enable_periph_clk(LED2_PIO_ID);
+	
+	pio_configure(LED2_PIO, PIO_OUTPUT_0,LED2_PIO_IDX_MASK, PIO_DEFAULT);
+	
+	pmc_enable_periph_clk(LED3_PIO_ID);
+	
+	pio_configure(LED3_PIO, PIO_OUTPUT_0,LED3_PIO_IDX_MASK, PIO_DEFAULT);
 	
 	// Configura interrupção no pino referente ao botao e associa
 	// função de callback caso uma interrupção for gerada		// a função de callback é a: but_callback()
