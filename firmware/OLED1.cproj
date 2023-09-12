@@ -567,10 +567,19 @@
     <Compile Include="src\ASF\sam\drivers\tc\tc.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\music.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\nggyu.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\starwars.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\utils.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\utils.h">
       <SubType>compile</SubType>
     </Compile>
     <None Include="src\ASF\sam\drivers\tc\tc.h">
