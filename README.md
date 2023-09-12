@@ -56,7 +56,7 @@ notas.h: Este arquivo contém as definições para todas as notas musicais que s
 
 ### Vídeo do projeto
 
-TODO: Inserir link para vídeo do projeto funcionando
+https://youtu.be/igsYZiQTl4k?si=lO17ktFUY3dtdy9n
 
 ### Músicas e Direitos autorais
 
