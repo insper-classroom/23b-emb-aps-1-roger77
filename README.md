@@ -45,11 +45,15 @@ TODO: Inserir link para vídeo do projeto funcionando
 
 Musicas retiradas do repositório https://github.com/robsoncouto/arduino-songs/tree/3b8ed10f644cb150bc3fe39c854546f5b9331f71 de Robson Couto:
 
-Luiz Gonzaga - Asa Branca
-Starwars - Cantina Band Song
-Starwars - Imperial March
-Rick Astley - Never Gonna Give You Up
-Super Mario Bros - Overworld Theme
+- Luiz Gonzaga - Asa Branca
+
+- Starwars - Cantina Band Song
+
+- Starwars - Imperial March
+
+- Rick Astley - Never Gonna Give You Up
+
+- Super Mario Bros - Overworld Theme
 The Legend of Zelda - Main Theme
 
 
