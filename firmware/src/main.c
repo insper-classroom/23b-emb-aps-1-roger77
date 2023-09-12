@@ -30,6 +30,11 @@
 #define BUT3_PIO_IDX 19
 #define BUT3_PIO_IDX_MASK (1u<< BUT3_PIO_IDX)
 
+#define LED_PIO           PIOC
+#define LED_PIO_ID        ID_PIOC
+#define LED_PIO_IDX       8
+#define LED_PIO_IDX_MASK  (1 << LED_PIO_IDX)
+
 //flags
 
 volatile char but1_flag;
@@ -156,7 +161,7 @@ void init(void) {
 	
 	pio_set_debounce_filter(BUT2_PIO, BUT2_PIO_IDX_MASK, 60);
 	
-	// Inicializando GoFoward (botão 2)
+	// Inicializando GoFoward (botão 3)
 	pmc_enable_periph_clk(BUT3_PIO_ID);
 	
 	pio_set_input(BUT3_PIO, BUT3_PIO_IDX_MASK, PIO_DEFAULT);
@@ -166,6 +171,11 @@ void init(void) {
 	pio_configure(BUT3_PIO, PIO_INPUT, BUT3_PIO_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
 	
 	pio_set_debounce_filter(BUT3_PIO, BUT3_PIO_IDX_MASK, 60);
+	
+	// LED que pisca junto às notas
+	pmc_enable_periph_clk(LED_PIO_ID);
+	
+	pio_configure(LED_PIO, PIO_OUTPUT_0,LED_PIO_IDX_MASK, PIO_DEFAULT);
 	
 	// Configura interrupção no pino referente ao botao e associa
 	// função de callback caso uma interrupção for gerada		// a função de callback é a: but_callback()
