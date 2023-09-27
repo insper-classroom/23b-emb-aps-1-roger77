@@ -177,26 +177,22 @@ void loop_musica(int tamanho, int id_musica, int tempo, int wholenote, int divid
 				display_flag = 1;
 			}
 
-			if (but1_flag) {
-				id_musica = (id_musica - 1 + 6) % 6;  // Volta para a m�sica anterior
-				musicaAtual = musicas[id_musica];
-				tamanho = musicaAtual.tamanho;
-				tempo = musicaAtual.tempo;
-				wholenote = (60000 * 4) / tempo;
-				thisNote = -2;
-				but1_flag = 0;                        // Reseta a flag
-				display_flag = 1;                     // Define a flag de exibi��o
-			}
+			if (but1_flag || but3_flag) {
+				if (but1_flag) {
+					id_musica = (id_musica - 1 + 6) % 6;  // Volta para a música anterior
+					but1_flag = 0;                        // Reseta a flag
+					} else if (but3_flag) {
+					id_musica = (id_musica + 1) % 6;      // Vai para a próxima música
+					but3_flag = 0;                        // Reseta a flag
+				}
 
-			if (but3_flag) {
-				id_musica = (id_musica + 1) % 6;      // Vai para a pr�xima m�sica
+				// Código comum entre but1_flag e but3_flag
 				musicaAtual = musicas[id_musica];
 				tamanho = musicaAtual.tamanho;
 				tempo = musicaAtual.tempo;
 				wholenote = (60000 * 4) / tempo;
 				thisNote = -2;
-				but3_flag = 0;                        // Reseta a flag
-				display_flag = 1;                     // Define a flag de exibi��o
+				display_flag = 1;                         // Define a flag de exibição
 			}
 			
 			// Verifica se a flag de exibi��o est� definida
