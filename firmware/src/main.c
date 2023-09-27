@@ -57,7 +57,8 @@ int main(void) {
 	int tamanho = musicaAtual.tamanho;
 	int tempo = musicaAtual.tempo;
 	int wholenote = (60000 * 4) / tempo;
-	int divider = 0, noteDuration = 0;
+	int divider;
+	int noteDuration = 0;
 
 	gfx_mono_draw_string(musicaAtual.nome, 50, 16, &sysfont);
 
