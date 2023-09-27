@@ -14,7 +14,7 @@ void clear_buzzer(){
 	pio_clear(BUZZER_PIO, BUZZER_PIO_IDX_MASK);
 }
 
-// Função init()
+// Funï¿½ï¿½o init()
 void init(void) {
 	// Initialize the board clock
 	sysclk_init();
@@ -22,14 +22,14 @@ void init(void) {
 	// Desativa WatchDog Timer
 	WDT->WDT_MR = WDT_MR_WDDIS;
 	
-	//Inicializando saída (buzzer)
+	//Inicializando saï¿½da (buzzer)
 	pmc_enable_periph_clk(BUZZER_PIO_ID);
 	
 	pio_set_output(BUZZER_PIO, BUZZER_PIO_IDX_MASK, 0, 0, 0);
 	
 	pio_pull_up(BUZZER_PIO, BUZZER_PIO_IDX_MASK, 1);
 	
-	// Inicializando GoBack (botão 1)
+	// Inicializando GoBack (botï¿½o 1)
 	pmc_enable_periph_clk(BUT1_PIO_ID);
 	
 	pio_set_input(BUT1_PIO, BUT1_PIO_IDX_MASK, PIO_DEFAULT);
@@ -40,7 +40,7 @@ void init(void) {
 	
 	pio_set_debounce_filter(BUT1_PIO, BUT1_PIO_IDX_MASK, 60);
 	
-	// Inicializando Start/Stop (botão 2)
+	// Inicializando Start/Stop (botï¿½o 2)
 	pmc_enable_periph_clk(BUT2_PIO_ID);
 	
 	pio_set_input(BUT2_PIO, BUT2_PIO_IDX_MASK, PIO_DEFAULT);
@@ -51,7 +51,7 @@ void init(void) {
 	
 	pio_set_debounce_filter(BUT2_PIO, BUT2_PIO_IDX_MASK, 60);
 	
-	// Inicializando GoFoward (botão 3)
+	// Inicializando GoFoward (botï¿½o 3)
 	pmc_enable_periph_clk(BUT3_PIO_ID);
 	
 	pio_set_input(BUT3_PIO, BUT3_PIO_IDX_MASK, PIO_DEFAULT);
@@ -62,7 +62,7 @@ void init(void) {
 	
 	pio_set_debounce_filter(BUT3_PIO, BUT3_PIO_IDX_MASK, 60);
 	
-	// LED que pisca junto às notas
+	// LED que pisca junto ï¿½s notas
 	pmc_enable_periph_clk(LED_PIO_ID);
 	
 	pio_configure(LED_PIO, PIO_OUTPUT_0,LED_PIO_IDX_MASK, PIO_DEFAULT);
@@ -79,8 +79,9 @@ void init(void) {
 	
 	pio_configure(LED3_PIO, PIO_OUTPUT_0,LED3_PIO_IDX_MASK, PIO_DEFAULT);
 	
-	// Configura interrupção no pino referente ao botao e associa
-	// função de callback caso uma interrupção for gerada		// a função de callback é a: but_callback()
+	// Configura interrupï¿½ï¿½o no pino referente ao botao e associa
+	// funï¿½ï¿½o de callback caso uma interrupï¿½ï¿½o for gerada		// a funï¿½ï¿½o de callback ï¿½ a: but_callback()
+	
 	
 	pio_handler_set(BUT1_PIO,
 	BUT1_PIO_ID,
@@ -100,7 +101,7 @@ void init(void) {
 	PIO_IT_FALL_EDGE,
 	but3_callback);
 	
-	// Ativa interrupção e limpa primeira IRQ gerada na ativacao
+	// Ativa interrupï¿½ï¿½o e limpa primeira IRQ gerada na ativacao
 	
 	pio_enable_interrupt(BUT1_PIO, BUT1_PIO_IDX_MASK);
 	pio_get_interrupt_status(BUT1_PIO);
@@ -112,7 +113,7 @@ void init(void) {
 	pio_get_interrupt_status(BUT3_PIO);
 	
 	// Configura NVIC para receber interrupcoes do PIO do botao
-	// com prioridade 4 (quanto mais próximo de 0 maior)
+	// com prioridade 4 (quanto mais prï¿½ximo de 0 maior)
 	
 	NVIC_EnableIRQ(BUT1_PIO_ID);
 	NVIC_SetPriority(BUT1_PIO_ID, 4); // Prioridade 4
@@ -142,11 +143,11 @@ void tone(int freq, int time){
 		pio_clear(LED2_PIO, LED2_PIO_IDX_MASK);
 		pio_clear(LED3_PIO, LED3_PIO_IDX_MASK);
 		
-		delay_us(periodo/2);						 // Aguarda meio período
+		delay_us(periodo/2);						 // Aguarda meio perï¿½odo
 		
 		clear_buzzer();                               // Desliga o buzzer
 		
-		delay_us(periodo/2);						 // Aguarda meio período
+		delay_us(periodo/2);						 // Aguarda meio perï¿½odo
 		
 		pio_set(LED_PIO, LED_PIO_IDX_MASK);
 		pio_set(LED1_PIO, LED1_PIO_IDX_MASK);
@@ -160,7 +161,7 @@ void loop_musica(int tamanho, int id_musica, int tempo, int wholenote, int divid
 		for (int thisNote = 0; thisNote < tamanho; thisNote += 2) {
 			pause_display_flag = 1;
 			
-			// Cálculo do progresso atual
+			// Cï¿½lculo do progresso atual
 			float progress = (float)thisNote / (float)tamanho;
 			int progressWidth = (int)(progress * 128);
 
@@ -177,35 +178,35 @@ void loop_musica(int tamanho, int id_musica, int tempo, int wholenote, int divid
 			}
 
 			if (but1_flag) {
-				id_musica = (id_musica - 1 + 6) % 6;  // Volta para a música anterior
+				id_musica = (id_musica - 1 + 6) % 6;  // Volta para a mï¿½sica anterior
 				musicaAtual = musicas[id_musica];
 				tamanho = musicaAtual.tamanho;
 				tempo = musicaAtual.tempo;
 				wholenote = (60000 * 4) / tempo;
 				thisNote = -2;
 				but1_flag = 0;                        // Reseta a flag
-				display_flag = 1;                     // Define a flag de exibição
+				display_flag = 1;                     // Define a flag de exibiï¿½ï¿½o
 			}
 
 			if (but3_flag) {
-				id_musica = (id_musica + 1) % 6;      // Vai para a próxima música
+				id_musica = (id_musica + 1) % 6;      // Vai para a prï¿½xima mï¿½sica
 				musicaAtual = musicas[id_musica];
 				tamanho = musicaAtual.tamanho;
 				tempo = musicaAtual.tempo;
 				wholenote = (60000 * 4) / tempo;
 				thisNote = -2;
 				but3_flag = 0;                        // Reseta a flag
-				display_flag = 1;                     // Define a flag de exibição
+				display_flag = 1;                     // Define a flag de exibiï¿½ï¿½o
 			}
 			
-			// Verifica se a flag de exibição está definida
+			// Verifica se a flag de exibiï¿½ï¿½o estï¿½ definida
 			if (display_flag) {
 				gfx_mono_draw_string("            ", 0, 16, &sysfont);
 				gfx_mono_draw_string(musicaAtual.nome, 50, 16, &sysfont);
-				display_flag = 0;                     // Limpa a flag de exibição
+				display_flag = 0;                     // Limpa a flag de exibiï¿½ï¿½o
 			}
 
-			// Código existente para tocar uma nota
+			// Cï¿½digo existente para tocar uma nota
 			int note = musicaAtual.notasEDuracoes[thisNote];
 			int duracao = musicaAtual.notasEDuracoes[thisNote + 1];
 			divider = duracao;
@@ -217,8 +218,8 @@ void loop_musica(int tamanho, int id_musica, int tempo, int wholenote, int divid
 				noteDuration *= 1.5;                  // Dotted notes are represented with negative durations
 			}
 
-			tone(note, noteDuration*0.9);
-			delay_ms(noteDuration);
+			tone(note, noteDuration);
+			delay_ms(0.1*noteDuration);
 		}
 	}
 }

@@ -47,12 +47,12 @@ int main (void){
 	gfx_mono_ssd1306_init();
 	
 	// Criando músicas
-	Musica mario = {"Mario", melody_mario, sizeof(melody_mario)/sizeof(melody_mario[0]), 350};
-	Musica starwars1 = {"ST1", melody_st1, sizeof(melody_st1)/sizeof(melody_st1[0]), 400};
-	Musica starwars2 = {"ST2", melody_st2, sizeof(melody_st2)/sizeof(melody_st2[0]), 200};
-	Musica zelda = {"Zelda", melody_zelda, sizeof(melody_zelda)/sizeof(melody_zelda[0]), 240};
-	Musica asabranca = {"AsaBr.", melody_ab, sizeof(melody_ab)/sizeof(melody_ab[0]), 200};
-	Musica nggyu = {"RickA.", melody_nggyu, sizeof(melody_nggyu)/sizeof(melody_nggyu[0]), 200};
+	Musica mario = {"Mario", melody_mario, sizeof(melody_mario)/sizeof(melody_mario[0]), 200};
+	Musica starwars1 = {"ST1", melody_st1, sizeof(melody_st1)/sizeof(melody_st1[0]), 200};
+	Musica starwars2 = {"ST2", melody_st2, sizeof(melody_st2)/sizeof(melody_st2[0]), 120};
+	Musica zelda = {"Zelda", melody_zelda, sizeof(melody_zelda)/sizeof(melody_zelda[0]), 120};
+	Musica asabranca = {"AsaBr.", melody_ab, sizeof(melody_ab)/sizeof(melody_ab[0]), 100};
+	Musica nggyu = {"RickA.", melody_nggyu, sizeof(melody_nggyu)/sizeof(melody_nggyu[0]), 110};
 	
 	Musica musicas[] = {mario, starwars1, starwars2, zelda, asabranca, nggyu};
 	
