@@ -1,3 +1,4 @@
+[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/VFRkr4Ac)
 # 21a-emb-aps1
 
 Embarcados - APS 1 - Musical!
@@ -36,10 +37,27 @@ TODO: Aualizar pinos
 
 ![image](https://github.com/insper-classroom/23b-emb-aps-1-roger77/assets/67804009/dfe00cf6-e73e-451c-a3c4-0205deeb329c)
 
+### Estrutura do código
+
+Funções notáveis:
+
+init(): Inicializa o relógio da placa, desativa o WDT, configura os periféricos (buzzer e botões), define as interrupções, e configura os LEDs.
+
+tone(int freq, int time): Gera um tom através do buzzer em uma frequência e duração especificadas, controlando também os LEDs.
+
+loop_musica(... variáveis ...): Responsável por executar um loop infinito que toca as músicas contidas no array musicas segundo as interações do usuário com os botões, além de exibir uma interface de progresso e informações sobre a música atual no display.
+
+Arquivos:
+
+utils.c: Contém a implementação principal do programa, incluindo a configuração de periféricos e as funções init, tone e loop_musica.
+
+main.c: Este arquivo contém a função main que define as músicas e configura a exibição inicial no display OLED. É aqui que é chamada a função loop_musica() para iniciar a reprodução da música.
+
+notas.h: Este arquivo contém as definições para todas as notas musicais que serão utilizadas no projeto. Cada nota é definida com um valor específico, que será usado pela função tone() para gerar o tom correspondente. A definição 'REST' é utilizada para representar uma pausa na música.
 
 ### Vídeo do projeto
 
-TODO: Inserir link para vídeo do projeto funcionando
+https://youtu.be/igsYZiQTl4k?si=lO17ktFUY3dtdy9n
 
 ### Músicas e Direitos autorais
 
